@@ -1,53 +1,63 @@
 package quicklibrary.estructuras;
 
+import quicklibrary.excepciones.ElementoNoEncontradoException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArbolBST<T extends Comparable<T>> {
 
     private NodoArbol<T> raiz;
 
-    public ArbolBST() {
-        raiz = null;
-    }
+    public ArbolBST() { raiz = null; }
 
-    public void insertar(T dato) {
-        raiz = insertarRec(raiz, dato);
-    }
+    // ── Insertar ──────────────────────────────────────────────────────────────
+
+    public void insertar(T dato) { raiz = insertarRec(raiz, dato); }
 
     private NodoArbol<T> insertarRec(NodoArbol<T> nodo, T dato) {
         if (nodo == null) return new NodoArbol<>(dato);
         int cmp = dato.compareTo(nodo.dato);
-        if (cmp < 0) nodo.izquierdo = insertarRec(nodo.izquierdo, dato);
-        else if (cmp > 0) nodo.derecho = insertarRec(nodo.derecho, dato);
+        if      (cmp < 0) nodo.izquierdo = insertarRec(nodo.izquierdo, dato);
+        else if (cmp > 0) nodo.derecho   = insertarRec(nodo.derecho,   dato);
         return nodo;
     }
 
+    // ── Buscar ────────────────────────────────────────────────────────────────
+
     public T buscar(T dato) {
-        return buscarRec(raiz, dato);
+        T r = buscarRec(raiz, dato);
+        if (r == null) throw new ElementoNoEncontradoException(
+            "No se encontro ningun libro con ese codigo.");
+        return r;
     }
 
     private T buscarRec(NodoArbol<T> nodo, T dato) {
         if (nodo == null) return null;
         int cmp = dato.compareTo(nodo.dato);
         if (cmp == 0) return nodo.dato;
-        if (cmp < 0) return buscarRec(nodo.izquierdo, dato);
-        return buscarRec(nodo.derecho, dato);
+        return cmp < 0 ? buscarRec(nodo.izquierdo, dato) : buscarRec(nodo.derecho, dato);
     }
 
+    public boolean contiene(T dato) { return buscarRec(raiz, dato) != null; }
+
+    // ── Eliminar ──────────────────────────────────────────────────────────────
+
     public void eliminar(T dato) {
+        if (!contiene(dato)) throw new ElementoNoEncontradoException(
+            "No se puede eliminar: no existe un libro con ese codigo.");
         raiz = eliminarRec(raiz, dato);
     }
 
     private NodoArbol<T> eliminarRec(NodoArbol<T> nodo, T dato) {
         if (nodo == null) return null;
         int cmp = dato.compareTo(nodo.dato);
-        if (cmp < 0) {
-            nodo.izquierdo = eliminarRec(nodo.izquierdo, dato);
-        } else if (cmp > 0) {
-            nodo.derecho = eliminarRec(nodo.derecho, dato);
-        } else {
+        if      (cmp < 0) nodo.izquierdo = eliminarRec(nodo.izquierdo, dato);
+        else if (cmp > 0) nodo.derecho   = eliminarRec(nodo.derecho,   dato);
+        else {
             if (nodo.izquierdo == null) return nodo.derecho;
-            if (nodo.derecho == null) return nodo.izquierdo;
+            if (nodo.derecho   == null) return nodo.izquierdo;
             NodoArbol<T> sucesor = minimoNodo(nodo.derecho);
-            nodo.dato = sucesor.dato;
+            nodo.dato   = sucesor.dato;
             nodo.derecho = eliminarRec(nodo.derecho, sucesor.dato);
         }
         return nodo;
@@ -58,28 +68,29 @@ public class ArbolBST<T extends Comparable<T>> {
         return nodo;
     }
 
-    public void inorden() {
-        inordenRec(raiz);
+    // ── Recorrido inorden ─────────────────────────────────────────────────────
+
+    public List<T> inorden() {
+        List<T> lista = new ArrayList<>();
+        inordenRec(raiz, lista);
+        return lista;
     }
 
-    private void inordenRec(NodoArbol<T> nodo) {
+    private void inordenRec(NodoArbol<T> nodo, List<T> lista) {
         if (nodo == null) return;
-        inordenRec(nodo.izquierdo);
-        System.out.println("  " + nodo.dato);
-        inordenRec(nodo.derecho);
+        inordenRec(nodo.izquierdo, lista);
+        lista.add(nodo.dato);
+        inordenRec(nodo.derecho, lista);
     }
 
-    public int contar() {
-        return contarRec(raiz);
-    }
+    // ── Utilidades ────────────────────────────────────────────────────────────
 
+    public int contar() { return contarRec(raiz); }
     private int contarRec(NodoArbol<T> nodo) {
         if (nodo == null) return 0;
         return 1 + contarRec(nodo.izquierdo) + contarRec(nodo.derecho);
     }
 
-    public boolean isEmpty() {
-        return raiz == null;
-    }
+    public boolean isEmpty() { return raiz == null; }
 }
 
