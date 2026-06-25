@@ -1,5 +1,7 @@
 package quicklibrary.estructuras;
 
+import quicklibrary.excepciones.ElementoNoEncontradoException;
+
 public class ArbolBST<T extends Comparable<T>> {
 
     private NodoArbol<T> raiz;
@@ -18,10 +20,6 @@ public class ArbolBST<T extends Comparable<T>> {
         if (cmp < 0) nodo.izquierdo = insertarRec(nodo.izquierdo, dato);
         else if (cmp > 0) nodo.derecho = insertarRec(nodo.derecho, dato);
         return nodo;
-    }
-
-    public T buscar(T dato) {
-        return buscarRec(raiz, dato);
     }
 
     private T buscarRec(NodoArbol<T> nodo, T dato) {
@@ -45,9 +43,14 @@ public class ArbolBST<T extends Comparable<T>> {
         return nodo;
     }
 
-    private NodoArbol<T> minimoNodo(NodoArbol<T> nodo) {
-        while (nodo.izquierdo != null) nodo = nodo.izquierdo;
-        return nodo;
+    public T buscar(T dato) {
+        T resultado = buscarRec(raiz, dato);
+        if (resultado == null) {
+            throw new ElementoNoEncontradoException(
+                "No se encontró ningún libro con ese código."
+            );
+        }
+        return resultado;
     }
 
     public void inorden() {
