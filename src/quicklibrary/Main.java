@@ -9,23 +9,21 @@ public class Main {
     public static void main(String[] args) {
 
         ArbolBST<Libro> catalogo = new ArbolBST<>();
-
-        catalogo.insertar(new Libro("103", "Introduccion a los Algoritmos", "Thomas Cormen", "Algoritmos", 2022, "Disponible"));
-        catalogo.insertar(new Libro("101", "Programacion en Java", "Herbert Schildt", "Programacion", 2022, "Disponible"));
-        catalogo.insertar(new Libro("105", "Clean Code", "Robert C. Martin", "Programacion", 2020, "Disponible"));
-        catalogo.insertar(new Libro("102", "Estructuras de Datos", "Mark Allen Weiss", "Computacion", 2021, "Disponible"));
-        catalogo.insertar(new Libro("104", "Redes de Computadoras", "Andrew Tanenbaum", "Redes", 2021, "Disponible"));
+        catalogo.insertar(new Libro("103","Introduccion a los Algoritmos","Thomas Cormen",  "Algoritmos",  2022));
+        catalogo.insertar(new Libro("101","Programacion en Java",         "Herbert Schildt","Programacion",2022));
+        catalogo.insertar(new Libro("105","Clean Code",                   "Robert C. Martin","Programacion",2020));
+        catalogo.insertar(new Libro("102","Estructuras de Datos",         "Mark Allen Weiss","Computacion", 2021));
+        catalogo.insertar(new Libro("104","Redes de Computadoras",        "Andrew Tanenbaum","Redes",       2021));
 
         System.out.println("=== Catalogo (inorden) ===");
-        catalogo.inorden();
+        for (Libro l : catalogo.inorden()) System.out.println("  " + l);
 
         System.out.println("\n=== Buscar codigo 102 ===");
-        Libro encontrado = catalogo.buscar(new Libro("102", "", "", "", 0, ""));
-        System.out.println(encontrado != null ? encontrado : "No encontrado");
+        System.out.println(catalogo.buscar(new Libro("102","","","",0)));
 
         System.out.println("\n=== Eliminar codigo 103 ===");
-        catalogo.eliminar(new Libro("103", "", "", "", 0, ""));
-        catalogo.inorden();
+        catalogo.eliminar(new Libro("103","","","",0));
+        for (Libro l : catalogo.inorden()) System.out.println("  " + l);
 
         System.out.println("\n=== Total libros: " + catalogo.contar() + " ===");
 
@@ -36,9 +34,8 @@ public class Main {
 
         System.out.println("\n=== Cola de solicitudes ===");
         solicitudes.mostrar();
-
         System.out.println("\nAtendiendo: " + solicitudes.dequeue());
-        System.out.println("Siguiente en cola: " + solicitudes.peek());
+        System.out.println("Siguiente: " + solicitudes.peek());
     }
 }
 
