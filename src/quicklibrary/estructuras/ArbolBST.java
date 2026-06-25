@@ -1,7 +1,5 @@
 package quicklibrary.estructuras;
 
-import quicklibrary.excepciones.ElementoNoEncontradoException;
-
 public class ArbolBST<T extends Comparable<T>> {
 
     private NodoArbol<T> raiz;
@@ -22,6 +20,10 @@ public class ArbolBST<T extends Comparable<T>> {
         return nodo;
     }
 
+    public T buscar(T dato) {
+        return buscarRec(raiz, dato);
+    }
+
     private T buscarRec(NodoArbol<T> nodo, T dato) {
         if (nodo == null) return null;
         int cmp = dato.compareTo(nodo.dato);
@@ -34,23 +36,26 @@ public class ArbolBST<T extends Comparable<T>> {
         raiz = eliminarRec(raiz, dato);
     }
 
-    private NodoArbol<T> insertarRec(NodoArbol<T> nodo, T dato) {
-        if (nodo == null) return new NodoArbol<>(dato); // Lugar encontrado
+    private NodoArbol<T> eliminarRec(NodoArbol<T> nodo, T dato) {
+        if (nodo == null) return null;
         int cmp = dato.compareTo(nodo.dato);
-        if (cmp < 0) nodo.izquierdo = insertarRec(nodo.izquierdo, dato); // Va a la izquierda
-        else if (cmp > 0) nodo.derecho = insertarRec(nodo.derecho, dato); // Va a la derecha
-        // cmp == 0: duplicado, se ignora
+        if (cmp < 0) {
+            nodo.izquierdo = eliminarRec(nodo.izquierdo, dato);
+        } else if (cmp > 0) {
+            nodo.derecho = eliminarRec(nodo.derecho, dato);
+        } else {
+            if (nodo.izquierdo == null) return nodo.derecho;
+            if (nodo.derecho == null) return nodo.izquierdo;
+            NodoArbol<T> sucesor = minimoNodo(nodo.derecho);
+            nodo.dato = sucesor.dato;
+            nodo.derecho = eliminarRec(nodo.derecho, sucesor.dato);
+        }
         return nodo;
     }
 
-    public T buscar(T dato) {
-        T resultado = buscarRec(raiz, dato);
-        if (resultado == null) {
-            throw new ElementoNoEncontradoException(
-                "No se encontró ningún libro con ese código."
-            );
-        }
-        return resultado;
+    private NodoArbol<T> minimoNodo(NodoArbol<T> nodo) {
+        while (nodo.izquierdo != null) nodo = nodo.izquierdo;
+        return nodo;
     }
 
     public void inorden() {
