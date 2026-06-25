@@ -36,20 +36,12 @@ public class ArbolBST<T extends Comparable<T>> {
         raiz = eliminarRec(raiz, dato);
     }
 
-    private NodoArbol<T> eliminarRec(NodoArbol<T> nodo, T dato) {
-        if (nodo == null) return null;
+    private NodoArbol<T> insertarRec(NodoArbol<T> nodo, T dato) {
+        if (nodo == null) return new NodoArbol<>(dato); // Lugar encontrado
         int cmp = dato.compareTo(nodo.dato);
-        if (cmp < 0) {
-            nodo.izquierdo = eliminarRec(nodo.izquierdo, dato);
-        } else if (cmp > 0) {
-            nodo.derecho = eliminarRec(nodo.derecho, dato);
-        } else {
-            if (nodo.izquierdo == null) return nodo.derecho;
-            if (nodo.derecho == null) return nodo.izquierdo;
-            NodoArbol<T> sucesor = minimoNodo(nodo.derecho);
-            nodo.dato = sucesor.dato;
-            nodo.derecho = eliminarRec(nodo.derecho, sucesor.dato);
-        }
+        if (cmp < 0) nodo.izquierdo = insertarRec(nodo.izquierdo, dato); // Va a la izquierda
+        else if (cmp > 0) nodo.derecho = insertarRec(nodo.derecho, dato); // Va a la derecha
+        // cmp == 0: duplicado, se ignora
         return nodo;
     }
 
