@@ -93,5 +93,25 @@ public class GestorLibros {
         return resultado;
     }
 
+    public void eliminarLibro(String codigo) {
+        Validador.codigoValido(codigo, "codigo");
+        catalogo.eliminar(new Libro(codigo, "", "", "", 0));
+    }
+
+    public void actualizarLibro(String codigo, String titulo, String autor,
+                                 String categoria, int anio) {
+        Validador.codigoValido(codigo, "codigo");
+        Validador.noVacio(titulo,    "titulo");
+        Validador.noVacio(autor,     "autor");
+        Validador.noVacio(categoria, "categoria");
+        Validador.anioValido(anio);
+
+        Libro libro = catalogo.buscar(new Libro(codigo, "", "", "", 0));
+        libro.setTitulo(titulo);
+        libro.setAutor(autor);
+        libro.setCategoria(categoria);
+        libro.setAnio(anio);
+    }
+
     public ArbolBST<Libro> getCatalogo() { return catalogo; }
 }
