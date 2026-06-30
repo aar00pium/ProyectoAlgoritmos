@@ -120,6 +120,6 @@ src/quicklibrary/
 
 ## Integrantes
 
-- aar00pium
-- samuelSC97
-- FrankHUN233
+- aar00pium Aaron Flor
+- samuelSC97 Samuel Sucasaire
+- FrankHUN233 Franco Morales
