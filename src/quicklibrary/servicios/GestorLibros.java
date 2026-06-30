@@ -113,5 +113,23 @@ public class GestorLibros {
         libro.setAnio(anio);
     }
 
+    public void prestarLibro(String codigoLibro) {
+        Validador.codigoValido(codigoLibro, "codigo");
+        Libro libro = catalogo.buscar(new Libro(codigoLibro, "", "", "", 0));
+        if (!libro.estaDisponible())
+            throw new IllegalStateException(
+                "El libro '" + codigoLibro + "' ya esta prestado.");
+        libro.setEstado(EstadoLibro.PRESTADO);
+    }
+
+    public void devolverLibro(String codigoLibro) {
+        Validador.codigoValido(codigoLibro, "codigo");
+        Libro libro = catalogo.buscar(new Libro(codigoLibro, "", "", "", 0));
+        if (libro.estaDisponible())
+            throw new IllegalStateException(
+                "El libro '" + codigoLibro + "' no esta prestado.");
+        libro.setEstado(EstadoLibro.DISPONIBLE);
+    }
+
     public ArbolBST<Libro> getCatalogo() { return catalogo; }
 }
