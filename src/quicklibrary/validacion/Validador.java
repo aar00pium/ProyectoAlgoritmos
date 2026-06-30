@@ -27,5 +27,20 @@ public class Validador {
                 "El campo '" + campo + "' solo puede contener letras y numeros.");
         }
     }
+
+    public static void enteroPositivo(int valor, String campo) {
+        if (valor <= 0) {
+            throw new DatoInvalidoException(
+                "El campo '" + campo + "' debe ser un numero positivo.");
+        }
+    }
+
+    public static void longitudMaxima(String valor, String campo, int max) {
+        noVacio(valor, campo);
+        if (valor.trim().length() > max) {
+            throw new DatoInvalidoException(
+                "El campo '" + campo + "' no puede superar los " + max + " caracteres.");
+        }
+    }
 }
 
