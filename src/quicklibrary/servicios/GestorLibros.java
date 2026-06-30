@@ -131,5 +131,47 @@ public class GestorLibros {
         libro.setEstado(EstadoLibro.DISPONIBLE);
     }
 
+    public Cola<Libro> listarPrestados() {
+        Cola<Libro> resultado = new Cola<>();
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty()) {
+            Libro l = todos.dequeue();
+            if (!l.estaDisponible()) resultado.enqueue(l);
+        }
+        return resultado;
+    }
+
+    public Cola<Libro> buscarPorTitulo(String titulo) {
+        Validador.noVacio(titulo, "titulo");
+        Cola<Libro> resultado = new Cola<>();
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty()) {
+            Libro l = todos.dequeue();
+            if (l.getTitulo().toLowerCase().contains(titulo.trim().toLowerCase()))
+                resultado.enqueue(l);
+        }
+        return resultado;
+    }
+
+    public Cola<Libro> buscarPorAutor(String autor) {
+        Validador.noVacio(autor, "autor");
+        Cola<Libro> resultado = new Cola<>();
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty()) {
+            Libro l = todos.dequeue();
+            if (l.getAutor().toLowerCase().contains(autor.trim().toLowerCase()))
+                resultado.enqueue(l);
+        }
+        return resultado;
+    }
+
+    public int contarPrestados() {
+        int c = 0;
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty())
+            if (!todos.dequeue().estaDisponible()) c++;
+        return c;
+    }
+
     public ArbolBST<Libro> getCatalogo() { return catalogo; }
 }
