@@ -6,14 +6,71 @@ import quicklibrary.excepciones.CodigoDuplicadoException;
 import quicklibrary.modelos.EstadoLibro;
 import quicklibrary.modelos.Libro;
 import quicklibrary.validacion.Validador;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class GestorLibros {
 
+    private static final String ARCHIVO = "libros.csv";
     private final ArbolBST<Libro> catalogo = new ArbolBST<>();
 
     public GestorLibros() {
-        cargarLibrosIniciales();
+        if (!cargarDesdeArchivo()) {
+            cargarLibrosIniciales();
+            guardarEnArchivo();
+        }
     }
+
+    // persistencia
+
+    private boolean cargarDesdeArchivo() {
+        File archivo = new File(ARCHIVO);
+        if (!archivo.exists()) return false;
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            br.readLine(); // cabecera
+            String linea;
+            boolean alguno = false;
+            while ((linea = br.readLine()) != null) {
+                String[] p = linea.split(";", 6);
+                if (p.length < 6) continue;
+                try {
+                    Libro libro = new Libro(p[0].trim(), p[1].trim(), p[2].trim(),
+                                            p[3].trim(), Integer.parseInt(p[4].trim()));
+                    libro.setEstado(EstadoLibro.valueOf(p[5].trim()));
+                    catalogo.insertar(libro);
+                    alguno = true;
+                } catch (Exception e) {
+                    // linea corrupta, se omite
+                }
+            }
+            return alguno;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public void guardarEnArchivo() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO))) {
+            bw.write("codigo;titulo;autor;categoria;anio;estado");
+            bw.newLine();
+            Cola<Libro> todos = catalogo.inorden();
+            while (!todos.isEmpty()) {
+                Libro l = todos.dequeue();
+                bw.write(l.getCodigo()    + ";" + l.getTitulo()    + ";" +
+                         l.getAutor()     + ";" + l.getCategoria() + ";" +
+                         l.getAnio()      + ";" + l.getEstado().name());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("[Aviso] No se pudo guardar en archivo: " + e.getMessage());
+        }
+    }
+
+    // datos iniciales
 
     private void cargarLibrosIniciales() {
         catalogo.insertar(new Libro("A001", "Introduccion a los Algoritmos",       "Thomas Cormen",        "Algoritmos",      2022));
@@ -48,6 +105,8 @@ public class GestorLibros {
         catalogo.insertar(new Libro("I003", "Deep Learning",                       "Ian Goodfellow",       "IA",              2020));
     }
 
+    // operaciones
+
     public void registrarLibro(String codigo, String titulo, String autor,
                                 String categoria, int anio) {
         Validador.codigoValido(codigo, "codigo");
@@ -55,12 +114,11 @@ public class GestorLibros {
         Validador.noVacio(autor,     "autor");
         Validador.noVacio(categoria, "categoria");
         Validador.anioValido(anio);
-
         if (catalogo.contiene(new Libro(codigo, "", "", "", 0)))
             throw new CodigoDuplicadoException(
                 "Ya existe un libro con el codigo '" + codigo + "'.");
-
         catalogo.insertar(new Libro(codigo, titulo, autor, categoria, anio));
+        guardarEnArchivo();
     }
 
     public Libro buscarLibro(String codigo) {
@@ -68,17 +126,19 @@ public class GestorLibros {
         return catalogo.buscar(new Libro(codigo, "", "", "", 0));
     }
 
-    public Cola<Libro> listarTodos() {
-        return catalogo.inorden();
-    }
+    public Cola<Libro> listarTodos()        { return catalogo.inorden(); }
 
     public Cola<Libro> listarDisponibles() {
         Cola<Libro> resultado = new Cola<>();
         Cola<Libro> todos = catalogo.inorden();
-        while (!todos.isEmpty()) {
-            Libro l = todos.dequeue();
-            if (l.estaDisponible()) resultado.enqueue(l);
-        }
+        while (!todos.isEmpty()) { Libro l = todos.dequeue(); if (l.estaDisponible()) resultado.enqueue(l); }
+        return resultado;
+    }
+
+    public Cola<Libro> listarPrestados() {
+        Cola<Libro> resultado = new Cola<>();
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty()) { Libro l = todos.dequeue(); if (!l.estaDisponible()) resultado.enqueue(l); }
         return resultado;
     }
 
@@ -93,62 +153,13 @@ public class GestorLibros {
         return resultado;
     }
 
-    public void eliminarLibro(String codigo) {
-        Validador.codigoValido(codigo, "codigo");
-        catalogo.eliminar(new Libro(codigo, "", "", "", 0));
-    }
-
-    public void actualizarLibro(String codigo, String titulo, String autor,
-                                 String categoria, int anio) {
-        Validador.codigoValido(codigo, "codigo");
-        Validador.noVacio(titulo,    "titulo");
-        Validador.noVacio(autor,     "autor");
-        Validador.noVacio(categoria, "categoria");
-        Validador.anioValido(anio);
-
-        Libro libro = catalogo.buscar(new Libro(codigo, "", "", "", 0));
-        libro.setTitulo(titulo);
-        libro.setAutor(autor);
-        libro.setCategoria(categoria);
-        libro.setAnio(anio);
-    }
-
-    public void prestarLibro(String codigoLibro) {
-        Validador.codigoValido(codigoLibro, "codigo");
-        Libro libro = catalogo.buscar(new Libro(codigoLibro, "", "", "", 0));
-        if (!libro.estaDisponible())
-            throw new IllegalStateException(
-                "El libro '" + codigoLibro + "' ya esta prestado.");
-        libro.setEstado(EstadoLibro.PRESTADO);
-    }
-
-    public void devolverLibro(String codigoLibro) {
-        Validador.codigoValido(codigoLibro, "codigo");
-        Libro libro = catalogo.buscar(new Libro(codigoLibro, "", "", "", 0));
-        if (libro.estaDisponible())
-            throw new IllegalStateException(
-                "El libro '" + codigoLibro + "' no esta prestado.");
-        libro.setEstado(EstadoLibro.DISPONIBLE);
-    }
-
-    public Cola<Libro> listarPrestados() {
-        Cola<Libro> resultado = new Cola<>();
-        Cola<Libro> todos = catalogo.inorden();
-        while (!todos.isEmpty()) {
-            Libro l = todos.dequeue();
-            if (!l.estaDisponible()) resultado.enqueue(l);
-        }
-        return resultado;
-    }
-
     public Cola<Libro> buscarPorTitulo(String titulo) {
         Validador.noVacio(titulo, "titulo");
         Cola<Libro> resultado = new Cola<>();
         Cola<Libro> todos = catalogo.inorden();
         while (!todos.isEmpty()) {
             Libro l = todos.dequeue();
-            if (l.getTitulo().toLowerCase().contains(titulo.trim().toLowerCase()))
-                resultado.enqueue(l);
+            if (l.getTitulo().toLowerCase().contains(titulo.trim().toLowerCase())) resultado.enqueue(l);
         }
         return resultado;
     }
@@ -159,17 +170,54 @@ public class GestorLibros {
         Cola<Libro> todos = catalogo.inorden();
         while (!todos.isEmpty()) {
             Libro l = todos.dequeue();
-            if (l.getAutor().toLowerCase().contains(autor.trim().toLowerCase()))
-                resultado.enqueue(l);
+            if (l.getAutor().toLowerCase().contains(autor.trim().toLowerCase())) resultado.enqueue(l);
         }
         return resultado;
+    }
+
+    public void eliminarLibro(String codigo) {
+        Validador.codigoValido(codigo, "codigo");
+        catalogo.eliminar(new Libro(codigo, "", "", "", 0));
+        guardarEnArchivo();
+    }
+
+    public void actualizarLibro(String codigo, String titulo, String autor,
+                                 String categoria, int anio) {
+        Validador.codigoValido(codigo, "codigo");
+        Validador.noVacio(titulo,    "titulo");
+        Validador.noVacio(autor,     "autor");
+        Validador.noVacio(categoria, "categoria");
+        Validador.anioValido(anio);
+        Libro libro = catalogo.buscar(new Libro(codigo, "", "", "", 0));
+        libro.setTitulo(titulo);
+        libro.setAutor(autor);
+        libro.setCategoria(categoria);
+        libro.setAnio(anio);
+        guardarEnArchivo();
+    }
+
+    public void prestarLibro(String codigoLibro) {
+        Validador.codigoValido(codigoLibro, "codigo");
+        Libro libro = catalogo.buscar(new Libro(codigoLibro, "", "", "", 0));
+        if (!libro.estaDisponible())
+            throw new IllegalStateException("El libro '" + codigoLibro + "' ya esta prestado.");
+        libro.setEstado(EstadoLibro.PRESTADO);
+        guardarEnArchivo();
+    }
+
+    public void devolverLibro(String codigoLibro) {
+        Validador.codigoValido(codigoLibro, "codigo");
+        Libro libro = catalogo.buscar(new Libro(codigoLibro, "", "", "", 0));
+        if (libro.estaDisponible())
+            throw new IllegalStateException("El libro '" + codigoLibro + "' no esta prestado.");
+        libro.setEstado(EstadoLibro.DISPONIBLE);
+        guardarEnArchivo();
     }
 
     public int contarPrestados() {
         int c = 0;
         Cola<Libro> todos = catalogo.inorden();
-        while (!todos.isEmpty())
-            if (!todos.dequeue().estaDisponible()) c++;
+        while (!todos.isEmpty()) if (!todos.dequeue().estaDisponible()) c++;
         return c;
     }
 

@@ -1,0 +1,31 @@
+codigo;titulo;autor;categoria;anio;estado
+A001;Introduccion a los Algoritmos;Thomas Cormen;Algoritmos;2022;DISPONIBLE
+A002;Algoritmos en Java;Robert Sedgewick;Algoritmos;2021;DISPONIBLE
+A003;El Arte de Programar;Donald Knuth;Algoritmos;2020;DISPONIBLE
+B001;Fundamentos de Bases de Datos;Abraham Silberschatz;Bases de Datos;2022;DISPONIBLE
+B002;MySQL en Profundidad;Paul DuBois;Bases de Datos;2021;DISPONIBLE
+B003;NoSQL Distilled;Martin Fowler;Bases de Datos;2019;DISPONIBLE
+C001;Arquitectura de Computadoras;Andrew Tanenbaum;Computacion;2021;DISPONIBLE
+C002;Sistemas Operativos Modernos;Andrew Tanenbaum;Computacion;2020;DISPONIBLE
+C003;Compiladores;Alfred Aho;Computacion;2019;DISPONIBLE
+C004;Organizacion de Computadoras;David Patterson;Computacion;2021;DISPONIBLE
+E001;Estructuras de Datos en Java;Mark Allen Weiss;Estructuras;2021;DISPONIBLE
+E002;Estructuras de Datos y Algoritmos;Michael Goodrich;Estructuras;2020;DISPONIBLE
+E003;Fundamentos de Estructuras de Datos;Ellis Horowitz;Estructuras;2019;DISPONIBLE
+I001;Inteligencia Artificial;Stuart Russell;IA;2022;DISPONIBLE
+I002;Aprendizaje Automatico;Aurelien Geron;IA;2021;DISPONIBLE
+I003;Deep Learning;Ian Goodfellow;IA;2020;DISPONIBLE
+M001;Calculo Diferencial e Integral;James Stewart;Matematicas;2020;DISPONIBLE
+M002;Algebra Lineal;Gilbert Strang;Matematicas;2021;DISPONIBLE
+M003;Matematica Discreta;Kenneth Rosen;Matematicas;2022;DISPONIBLE
+P001;Programacion en Java;Herbert Schildt;Programacion;2022;DISPONIBLE
+P002;Clean Code;Robert C. Martin;Programacion;2020;DISPONIBLE
+P003;Refactoring;Martin Fowler;Programacion;2019;DISPONIBLE
+P004;Effective Java;Joshua Bloch;Programacion;2021;DISPONIBLE
+P005;Design Patterns;Gang of Four;Programacion;2018;DISPONIBLE
+R001;Redes de Computadoras;Andrew Tanenbaum;Redes;2021;DISPONIBLE
+R002;TCP/IP Illustrated;W. Richard Stevens;Redes;2018;DISPONIBLE
+R003;Redes y Comunicaciones;William Stallings;Redes;2020;DISPONIBLE
+S001;Ingenieria de Software;Ian Sommerville;Software;2021;DISPONIBLE
+S002;The Pragmatic Programmer;Andrew Hunt;Software;2020;DISPONIBLE
+S003;Software Architecture Patterns;Mark Richards;Software;2019;DISPONIBLE
