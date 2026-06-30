@@ -1,6 +1,7 @@
 package quicklibrary.servicios;
 
 import quicklibrary.estructuras.ArbolBST;
+import quicklibrary.estructuras.Cola;
 import quicklibrary.excepciones.CodigoDuplicadoException;
 import quicklibrary.modelos.EstadoLibro;
 import quicklibrary.modelos.Libro;
@@ -60,6 +61,36 @@ public class GestorLibros {
                 "Ya existe un libro con el codigo '" + codigo + "'.");
 
         catalogo.insertar(new Libro(codigo, titulo, autor, categoria, anio));
+    }
+
+    public Libro buscarLibro(String codigo) {
+        Validador.codigoValido(codigo, "codigo");
+        return catalogo.buscar(new Libro(codigo, "", "", "", 0));
+    }
+
+    public Cola<Libro> listarTodos() {
+        return catalogo.inorden();
+    }
+
+    public Cola<Libro> listarDisponibles() {
+        Cola<Libro> resultado = new Cola<>();
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty()) {
+            Libro l = todos.dequeue();
+            if (l.estaDisponible()) resultado.enqueue(l);
+        }
+        return resultado;
+    }
+
+    public Cola<Libro> listarPorCategoria(String categoria) {
+        Validador.noVacio(categoria, "categoria");
+        Cola<Libro> resultado = new Cola<>();
+        Cola<Libro> todos = catalogo.inorden();
+        while (!todos.isEmpty()) {
+            Libro l = todos.dequeue();
+            if (l.getCategoria().equalsIgnoreCase(categoria.trim())) resultado.enqueue(l);
+        }
+        return resultado;
     }
 
     public ArbolBST<Libro> getCatalogo() { return catalogo; }

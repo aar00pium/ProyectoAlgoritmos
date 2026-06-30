@@ -16,14 +16,16 @@ public class Main {
         catalogo.insertar(new Libro("104","Redes de Computadoras",        "Andrew Tanenbaum","Redes",       2021));
 
         System.out.println("=== Catalogo (inorden) ===");
-        for (Libro l : catalogo.inorden()) System.out.println("  " + l);
+        Cola<Libro> lista1 = catalogo.inorden();
+        while (!lista1.isEmpty()) System.out.println("  " + lista1.dequeue());
 
         System.out.println("\n=== Buscar codigo 102 ===");
         System.out.println(catalogo.buscar(new Libro("102","","","",0)));
 
         System.out.println("\n=== Eliminar codigo 103 ===");
         catalogo.eliminar(new Libro("103","","","",0));
-        for (Libro l : catalogo.inorden()) System.out.println("  " + l);
+        Cola<Libro> lista2 = catalogo.inorden();
+        while (!lista2.isEmpty()) System.out.println("  " + lista2.dequeue());
 
         System.out.println("\n=== Total libros: " + catalogo.contar() + " ===");
 

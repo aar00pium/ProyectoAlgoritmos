@@ -1,8 +1,6 @@
 package quicklibrary.estructuras;
 
 import quicklibrary.excepciones.ElementoNoEncontradoException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ArbolBST<T extends Comparable<T>> {
 
@@ -70,17 +68,17 @@ public class ArbolBST<T extends Comparable<T>> {
 
     // ── Recorrido inorden ─────────────────────────────────────────────────────
 
-    public List<T> inorden() {
-        List<T> lista = new ArrayList<>();
-        inordenRec(raiz, lista);
-        return lista;
+    public Cola<T> inorden() {
+        Cola<T> cola = new Cola<>();
+        inordenRec(raiz, cola);
+        return cola;
     }
 
-    private void inordenRec(NodoArbol<T> nodo, List<T> lista) {
+    private void inordenRec(NodoArbol<T> nodo, Cola<T> cola) {
         if (nodo == null) return;
-        inordenRec(nodo.izquierdo, lista);
-        lista.add(nodo.dato);
-        inordenRec(nodo.derecho, lista);
+        inordenRec(nodo.izquierdo, cola);
+        cola.enqueue(nodo.dato);
+        inordenRec(nodo.derecho, cola);
     }
 
     // ── Utilidades ────────────────────────────────────────────────────────────
